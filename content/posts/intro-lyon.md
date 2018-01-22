@@ -94,7 +94,7 @@ From there to pixels on your screen, it can be very simple or very complicated, 
 
 Lyon's fill tessellator is by far where most of the work went so far. But there are a bunch of other goodies too. There is a stroke tessellator that supports most SVG stroke properties (line caps, joins, etc.), and some specialized fill and stroke tessellators for common/simpler shapes (circles, rounded rectangles, convex polygons, polylines etc.).
 
-Lyon is plit into a few crates, in a way that is transparent for people who use the main crate, but helps with taming compile times and makes it possible for people to hand-pick certain features with minimal dependencies if they wish to.
+Lyon is split into a few crates, in a way that is transparent for people who use the main crate, but helps with taming compile times and makes it possible for people to hand-pick certain features with minimal dependencies if they wish to.
 
 ### lyon::geom
 
@@ -268,7 +268,7 @@ Or even your next pull request, Who knows?
 
 ## Big thanks to all contributors
 
-Now is a good time to underline I didn't all of this work alone. I want to thank again all the [awesome individuals](https://github.com/nical/lyon/wiki/Contributors#contributors) who submitted contributions, big and small, to the project. This project is too large for a single person's spare time, and seeing people come and give a hand is the most rewarding and motivating thing. Also thanks a lot to everyone who is using lyon and reporting bugs!
+Now is a good time to underline that I didn't do all of this work alone. I want to thank again all the [awesome individuals](https://github.com/nical/lyon/wiki/Contributors#contributors) who submitted contributions, big and small, to the project. This project is too large for a single person's spare time, and seeing people come and give a hand is the most rewarding and motivating thing. Also thanks a lot to everyone who is using lyon and reporting bugs!
 
 Want to join the fun? Check out the [contribution guidelines](https://github.com/nical/lyon/blob/master/CONTRIBUTING.md), get started on the [easier issues](https://github.com/nical/lyon/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22), and don't hesitate to ask any question on [gitter](https://gitter.im/lyon-rs/Lobby) or irc in #rust-gamedev.
 I want this project to be as fun and welcoming as possible and I would love it to be more of a team effort than a one man show. If you are running into issues contribting, [let me know](https://github.com/nical/lyon/issues/32).
