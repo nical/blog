@@ -30,7 +30,7 @@ ARTICLE_SAVE_AS = 'posts/{slug}.html'
 LINKS = ()
 SOCIAL = (
     ('mastodon', 'https://mastodon.gamedev.place/@Nical'),
-    ('twitter', 'https://twitter.com/nical'),
+    ('twitter', 'https://twitter.com/nicalsilva'),
     ('github', 'https://github.com/nical'),
     ('mozgfx', 'http://mozillagfx.wordpress.com/'),
 )
