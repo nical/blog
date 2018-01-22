@@ -1,8 +1,10 @@
 Title: Introduction to lyon: 2D vector graphics rendering on the GPU in rust
-Date: 2018-1-21
+Date: 2018-1-22
 Category: lyon, rust
+Slug: lyon-intro
+Authors: Nical
 
-[![crate](http://meritbadge.herokuapp.com/lyon)](https://crates.io/crates/lyon)
+[![crate](https://meritbadge.herokuapp.com/lyon)](https://crates.io/crates/lyon)
 [![doc](https://docs.rs/lyon/badge.svg)](https://docs.rs/lyon)
 
 [Lyon](https://github.com/nical/lyon) is a side-project that I have been working on for quite a while. The goal is to play with rendering 2D vector graphics on the GPU, and it's been a lot of fun so far. I haven't talked a lot about it online (except for a couple of reddit threads a year or two ago) so I figured it would be a good topic to get this blog started.
@@ -96,7 +98,7 @@ Lyon is plit into a few crates, in a way that is transparent for people who use 
 
 ### lyon::geom
 
-[![crate](http://meritbadge.herokuapp.com/lyon_geom)](https://crates.io/crates/lyon_geom)
+[![crate](https://meritbadge.herokuapp.com/lyon_geom)](https://crates.io/crates/lyon_geom)
 [![doc](https://docs.rs/lyon_geom/badge.svg)](https://docs.rs/lyon_geom)
 
 Lyon's [geom](https://docs.rs/lyon_geom) module implements a lot of fun math for curve and line segments in 2D (splitting, flattening, intersecting, measuring, etc.) on top of euclid.
@@ -127,7 +129,7 @@ If you only need this and like minimal dependencies, just do `extern crate lyon_
 
 ### lyon::path
 
-[![crate](http://meritbadge.herokuapp.com/lyon_path)](https://crates.io/crates/lyon_path)
+[![crate](https://meritbadge.herokuapp.com/lyon_path)](https://crates.io/crates/lyon_path)
 [![doc](https://docs.rs/lyon_path/badge.svg)](https://docs.rs/lyon_path)
 
 Lyon's [path](https://docs.rs/lyon_path) module contains path-related data structures and algorithms.
@@ -207,7 +209,7 @@ Like before, if you only want to play with paths without tessellating themyou ca
 
 ### lyon::svg
 
-[![crate](http://meritbadge.herokuapp.com/lyon_svg)](https://crates.io/crates/lyon_svg)
+[![crate](https://meritbadge.herokuapp.com/lyon_svg)](https://crates.io/crates/lyon_svg)
 [![doc](https://docs.rs/lyon_svg/badge.svg)](https://docs.rs/lyon_svg)
 
 This module reexports the (very good) [svgparser crate](https://docs.rs/svgparser) and uses it to provide a simple to build a path from an SVG path syntax:
@@ -219,7 +221,7 @@ let path = svg::path_utils::build_path(svg_builder, &"M 0 0 L 10 0 L 10 10 L 0 1
 
 ### lyon_tess2
 
-[![crate](http://meritbadge.herokuapp.com/lyon_tess2)](https://crates.io/crates/lyon_extra)
+[![crate](https://meritbadge.herokuapp.com/lyon_tess2)](https://crates.io/crates/lyon_extra)
 [![doc](https://docs.rs/lyon_tess2/badge.svg)](https://docs.rs/lyon_extra) -
 
 The lyon_tess2 crate is a very recent addition. It provides an alternative fill tessellator that wraps the [libtess2](https://github.com/memononen/libtess2) C library. I use it mostly to have something to compare lyon against, but as the two tessellators don't have the exact same feature set it can be useful to others as well.

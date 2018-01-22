@@ -23,6 +23,8 @@ THEME='theme/svbhack'
 ARTICLE_PATHS = ['posts', 'images']
 PAGE_PATHS = ['pages', 'images']
 STATIC_PATHS = ['images']
+ARTICLE_URL = 'posts/{slug}.html'
+ARTICLE_SAVE_AS = 'posts/{slug}.html'
 
 # aside
 LINKS = ()
