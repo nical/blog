@@ -49,7 +49,7 @@ I think that there is no way around having dedicated implementations if you want
 
 # Overdraw
 
-We saw how to figure out what pixels that are inside a shape and fill them. From there to a drawing containing hundreds of paths the process is usually to render these paths individually from back to front, so that front-most elements don't get overwritten by the ones behind them.
+We saw how to figure out which pixels are inside a shape and fill them. From there to a drawing containing hundreds of paths the process is usually to render these paths individually from back to front, so that front-most elements don't get overwritten by the ones behind them.
 Simple enough, however this means that for drawings that are built upon many shapes stacked on top of one another like the famous GhostScript tiger, pixels will typically get written to many times. It's quite a shame, because it means that hidden parts add to the rendering cost just as much as the rest even though they do not contribute to the final image.
 
 ![ghostscript tiger overdraw]({filename}/images/rustfest/tiger-overdraw.svg)
