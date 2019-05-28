@@ -9,7 +9,7 @@ Authors: Nical
 
 [Lyon](https://github.com/nical/lyon) is a side-project that I have been working on for quite a while. The goal is to play with rendering 2D vector graphics on the GPU, and it's been a lot of fun so far. I haven't talked a lot about it online (except for a couple of reddit threads a year or two ago) so I figured it would be a good topic to get this blog started.
 
-![The logo]({filename}/images/lyon-logo.svg)
+![The logo]({static}/images/lyon-logo.svg)
 
 In this post I'll talk very briefly about tessellators (lyon's biggest feature) and show a few code snippets to illustrate some of the things you can do with lyon today.
 
@@ -17,7 +17,7 @@ In this post I'll talk very briefly about tessellators (lyon's biggest feature) 
 
 Path tessellation (or triangulation), in a nutshell, is taking a path (for example a [canvas](https://developer.mozilla.org/en-US/docs/Web/API/Path2D/Path2D) or [SVG](https://www.w3.org/TR/SVG/paths.html#PathData) path) and approximating it with a set of triangles (like the way we usually represent 3d models but in 2d). While the output of the tessellator is customizable, lyon is pretty much designed for generating vertex and index buffers, which anyone working with low level graphics APIs should be familiar with. As a result we obtain geometry in a format that is very easy to work with on the GPU using the same techniques used for 3D graphics.
 
-![tessellated shape]({filename}/images/lyon-logo-tessellated.png)
+![tessellated shape]({static}/images/lyon-logo-tessellated.png)
 
 ## Monotone decomposition
 
@@ -234,7 +234,7 @@ The repository contains command-line application that you can use to tessellate 
 lyon/cli/ $ cargo run --  show -i ../assets/logo.path --fill --stroke --tolerance 0.01
 ```
 
-![screenshot]({filename}/images/lyon-cli-screenshot.png)
+![screenshot]({static}/images/lyon-cli-screenshot.png)
 
 ```bash
 lyon/cli/ $ cargo run --  tessellate "M 0 0 L 1 0 L 1 1 L 0 1 Z" --fill
@@ -273,7 +273,7 @@ Now is a good time to underline that I didn't do all of this work alone. I want 
 Want to join the fun? Check out the [contribution guidelines](https://github.com/nical/lyon/blob/master/CONTRIBUTING.md), get started on the [easier issues](https://github.com/nical/lyon/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22), and don't hesitate to ask any question on [gitter](https://gitter.im/lyon-rs/Lobby) or irc in #rust-gamedev.
 I want this project to be as fun and welcoming as possible and I would love it to be more of a team effort than a one man show. If you are running into issues contribting, [let me know](https://github.com/nical/lyon/issues/32).
 
-![lyon stickers photo]({filename}/images/lyon-stickers.jpg)
+![lyon stickers photo]({static}/images/lyon-stickers.jpg)
 
 There are lyon stickers which is the ultimate proof that the project is cool.
 

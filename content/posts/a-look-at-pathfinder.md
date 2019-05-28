@@ -21,15 +21,15 @@ Pathfinder splits paths into 16x16 pixels tiles. This tiling scheme has the foll
 
 For example let's look at the following simple scene:
 
-![A simple scene]({filename}/images/pathfinder/simple-scene.png)
+![A simple scene]({static}/images/pathfinder/simple-scene.png)
 
 And decompose it into tiles:
 
-![Tiled simple scene]({filename}/images/pathfinder/tiled-simple-scene.png)
+![Tiled simple scene]({static}/images/pathfinder/tiled-simple-scene.png)
 
 In the scene, we have a number of opaque tiles that are very simple to render once we have identified that they are fully covered by a path.
 
-![Tiled simple scene]({filename}/images/pathfinder/opaque-tiles.png)
+![Tiled simple scene]({static}/images/pathfinder/opaque-tiles.png)
 
 These are simply rendered by submitting a batch of instanced quads.
 
@@ -37,13 +37,13 @@ A very good property of opaque tiles is that they completely hide what's under t
 
 The image below gives an idea of the overdraw of the famous GhostScript tiger. The lighter a pixel is, the more times it is written to with a traditional back to front rendering algorithm without occlusion culling.
 
-![ghostscript tiger overdraw]({filename}/images/rustfest/tiger-overdraw.svg)
+![ghostscript tiger overdraw]({static}/images/rustfest/tiger-overdraw.svg)
 
 Because memory bandwidth is often the bottleneck when rendering vector graphics (especially at high resolutions), this occlusion culling is key to pathfinder's performance.
 
 Here is a view of the opaque tile pass for the GhostScript tiger in renderdoc:
 
-![Tiger opaque tiles in renderdoc]({filename}/images/pathfinder/tiger-opaque-tiles.png)
+![Tiger opaque tiles in renderdoc]({static}/images/pathfinder/tiger-opaque-tiles.png)
 
 The opaque tile pass is very fast because it has zero overdraw and doesn't need any blending.
 
@@ -51,7 +51,7 @@ The opaque tile pass is very fast because it has zero overdraw and doesn't need 
 
 Back to our simple scene, this leaves us with the partially covered tiles to deal with:
 
-![partial tiles of the simple scene]({filename}/images/pathfinder/simple-scene-partial-tiles.png)
+![partial tiles of the simple scene]({static}/images/pathfinder/simple-scene-partial-tiles.png)
 
 Opaque tiles are easy. It's good that we were able to detect them and render them with simple instanced quads, it even gives us a crude approximation of the final image, but the real challenge remains to render curves with high quality anti-aliasing.
 
@@ -59,7 +59,7 @@ I will use the terms *alpha tiles* or *mask tiles* for tiles that contain edges.
 
 The float texture containing the masks for our simple scene might look something like this:
 
-![mask tiles of the simple scene]({filename}/images/pathfinder/simple-scene-mask.png)
+![mask tiles of the simple scene]({static}/images/pathfinder/simple-scene-mask.png)
 
 ## Rendering the masks
 
@@ -72,15 +72,15 @@ Instead of rendering masks into an integer textures like the stencil buffer, pat
 
 Each edge intersecting a tile is submitted as a quad that corresponds the bounding rectangle of the edge intersected with bounds of the tile and with the lower edge snapped to the bottom of the tile.
 
-![Tile edge quad]({filename}/images/pathfinder/tile-mask-quad.png)
+![Tile edge quad]({static}/images/pathfinder/tile-mask-quad.png)
 
 That the shape of these quads might look somewhat arbitrary. Before we can make sense of it we have to look at what this quad actually renders. For each pixel the fragment shader writes 0 if it is fully above the edge, ±1 below the edge, or a value in between corresponding to the coverage of the pixel if it is near the edge. The output value is either positive or negative depending on the winding of the edge.
 
-![Tile edge quad]({filename}/images/pathfinder/tile-mask-shader.png)
+![Tile edge quad]({static}/images/pathfinder/tile-mask-shader.png)
 
 The quads are rendered with additive blending, causing the contributions of each edge to accumulate in the tile's mask.
 
-![Tile edge quad]({filename}/images/pathfinder/mask-coverage.png)
+![Tile edge quad]({static}/images/pathfinder/mask-coverage.png)
 
 Now why did we snap the bottom of the quads to the bottom of the tile?
 
@@ -98,11 +98,11 @@ In the previous illustration we took it from granted that the top of the tile wa
 
 One solution could be to simply include all edges above the tile but for large drawing this can bring a lot of edges. So pathfinder handles this during the tiling phase on the CPU by tracking the winding number at the top of each tile and inserting a minimal amount of extra edges to compensate for the information that is lost by only considering edges inside of the tile.
 
-![Tile edge quad]({filename}/images/pathfinder/mask-coverage-2.png)
+![Tile edge quad]({static}/images/pathfinder/mask-coverage-2.png)
 
 On the left side of the image below, the tiger is rendered and the triangles emitted during the compositing pass of the mask tiles are highlighted in yellow. On the right side the same pass is rendered on top of a black background to better see which parts of the drawing end up drawn with mask tiles. The image was produced thanks to renderdoc.
 
-![Tile edge quad]({filename}/images/pathfinder/tiger-alpha-pass.png)
+![Tile edge quad]({static}/images/pathfinder/tiger-alpha-pass.png)
 
 ## Summary
 

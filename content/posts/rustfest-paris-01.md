@@ -14,7 +14,7 @@ I gave a talk about [lyon](https://github.com/nical/lyon) at [RustFest Paris](ht
 
 The recordings are already online, so you can watch it [here](https://app.media.ccc.de/v/rustfest18-7-vector_graphics_rendering_on_the_gpu_in_rust_with_lyon) or on [YouTube](https://www.youtube.com/watch?v=2Ng5kpDirDI&list=PL85XCvVPmGQgdqz9kz6qH3SI_hp7Zb4s1&index=7) if you prefer.
 
-![lets talk about vector graphics svg]({filename}/images/rustfest/intro.svg)
+![lets talk about vector graphics svg]({static}/images/rustfest/intro.svg)
 
 Even though I didn't feel super good about the flow of my speech this time around, I think that the talk was well received and the last minute "let's fix my window manager" episode didn't turn into a disaster.
 
@@ -40,7 +40,7 @@ Before I delve into lyon, let's get the terminology straight. Raster graphics is
 
 On the other hand raster images force authors to think about the resolution at which content is produced versus resolution at which it is presented (the output resolution of a screen for example), and they don't always happen to line up perfectly. So what happens when a 800x450 pixels image has to fill a 2560x1440 pixels screen? In most cases the image will look either blurrier or pixelated. At high resolutions, raster images occupy a lot of space. Image compression formats (png, jpeg and more modern successors) do their best to mitigate that in clever ways but size remains a limiting factor when dealing with large amounts of high resolution raster images, be it in terms of disk pass, or network bandwidth.
 
-![slide raster vs vector]({filename}/images/rustfest/rstr-vctr.svg)
+![slide raster vs vector]({static}/images/rustfest/rstr-vctr.svg)
 
 Fortunately, specifying 2D content pixel by pixel is not the only choice we have at our disposal. In a lot of cases we can author and distribute not the resulting image but the steps to produce it. In very broad terms this is what I refer to when talking about vector graphics.
 
@@ -50,28 +50,28 @@ Beyond SVG, I consider HTML/CSS to be a vector graphics format, since it is buil
 
 The little shape in the image above doesn't look like much but add many more and you can end up with complex drawings like the famous GhostScript tiger which inevitably appears in any presentation on the topic of vector graphics.
 
-![tiger]({filename}/images/rustfest/tiger.svg)
+![tiger]({static}/images/rustfest/tiger.svg)
 
 # Vector graphics everywhere
 
 Today graphical applications all make use of vector graphics. Fonts are almost always described with vector formats, user interfaces, just like web pages need to be described in a way that adapts to various layouts and resolutions, a problem that vector graphics lends itself to addressing naturally.
 
-![ui slide]({filename}/images/rustfest/ui.svg)
+![ui slide]({static}/images/rustfest/ui.svg)
 
 Using a vector format to describe maps avoids spending a lot of network bandwidth on all of these pixels and lets you zoom in and out of a map without seeing a blurry mess (unless the application is unable to render the map at interactive frame rate and choses to show you a scaled version of the previous frame while it renders the new one).
 
-![maps]({filename}/images/rustfest/map.svg)
+![maps]({static}/images/rustfest/map.svg)
 
 Using vector graphics in games can be useful as well. Today, 3D and 2D games come with gigabytes of assets, a huge part of it being fairly high resolution textures. This can be very inconvenient when attempting to distribute games over the network or even just fitting the game alongside the other installed apps in a relatively small drive.
 Some games could also take advantage of the resolution-independence to present content at different scales for gameplay purposes or to enhance the story telling.
 
-![rpg]({filename}/images/rustfest/rpg.svg)
+![rpg]({static}/images/rustfest/rpg.svg)
 
 # Vector graphics at 60 frames per seconds
 
 Turns out that rendering a screen-full of complex vector graphics at an interactive frame rate is challenging. Whether it is on a laptop or a phone, Screens tend to have a *lot* of pixels. Filling this many pixels with interesting content means a fair amount of arithmetic, and involves a lot of memory accesses. To make things worse, the drawing model for 2D content is typically based on the [painter's algorithm](https://en.wikipedia.org/wiki/Painter%27s_algorithm) which consists in drawing back to front, and this content is usually built upon many overlapping layers. Take a closer look at the tiger above to see what I mean. pixels tend to be written to many times (this is called overdraw), which amplifies the cost of rendering at a high resolution.
 
-![screens]({filename}/images/rustfest/screen.svg)
+![screens]({static}/images/rustfest/screen.svg)
 
 As a result of that a lot of applications tend to consider rendering complex vector graphics to be too expensive for high frequency updates and either bake 2D content into textures before releasing the product (a lot of games do that) or architect their rendering tech around hiding this cost, for example by rendering to intermediate surfaces at a low frequency while these surfaces are composited to the screen at a higher frequency, which allows some types of animations stay at a solid 60fps (web browsers in particular do this).
 
