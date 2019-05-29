@@ -4,7 +4,7 @@ Category: pathfinder, rust
 Slug: a-look-at-pathfinder
 Authors: Nical
 
-This post is about [pathfinder](https://github.com/pcwalton/pathfinder), a GPU vector graphics renderer written in Rust by Patrick Walton as part of hist work in the emerging technologies team at Mozilla. While I have followed this work very closely, I have contributed very little code to pathfinder so the credit really goes to Patrick.
+This post is about [pathfinder](https://github.com/pcwalton/pathfinder), a GPU vector graphics renderer written in Rust by Patrick Walton as part of his work in the emerging technologies team at Mozilla. While I have followed this work very closely, I have contributed very little code to pathfinder so the credit really goes to Patrick.
 
 If you've read other entries on the blog you've heard of [lyon](https://github.com/nical/lyon), which helps you with rendering vector graphics on the GPU by turning paths into triangle meshes. Pathfinder takes a completely different approach, so you should ignore everything I have written about lyon's tessellator while reading this post.
 
