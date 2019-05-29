@@ -151,7 +151,7 @@ I'll close this post with a few good reads for those who want to further explore
 
  - [A presentation of Piet-metal](https://raphlinus.github.io/rust/graphics/gpu/2019/05/08/modern-2d.html) by Raph Levien.
  - [GPU text rendering with vector textures](https://wdobbie.com/post/gpu-text-rendering-with-vector-textures/) by Will Dobbie.
- - [Random access vector graphics](https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&cad=rja&uact=8&ved=2ahUKEwjGiceo2b7iAhXy6OAKHZP9ANAQFjAAegQIABAC&url=http%3A%2F%2Fhhoppe.com%2Fravg.pdf&usg=AOvVaw1NL8P03KpwYMhV5b28T-44) paper by Hugues Hoppe and Diego Nehab.
+ - [Random access vector graphics](http://hhoppe.com/ravg.pdf) paper by Hugues Hoppe and Diego Nehab.
  - [Massively parallel vector graphics](http://w3.impa.br/~diego/publications/GanEtAl14.pdf) paper by Francisco Ganacim, Rodolfo S. Lima, Luiz Henrique de Figueiredo and Diego Nehab which follows up on the random access paper with a different data structure.
  - FastUIDraw technical details [part 1](https://01.org/fast-ui-draw/blogs/krogovin/2016/fast-ui-draw-technical-details-1) and [part 2](https://01.org/fast-ui-draw/blogs/krogovin/2016/fast-ui-draw-technical-details-2) and [XDC2016 talk](https://www.youtube.com/watch?v=2ryvYS47V0E&feature=youtu.be&t=6h08m23s).
  - [Easy scalable text rendering on the GPU](https://medium.com/@evanwallace/easy-scalable-text-rendering-on-the-gpu-c3f4d782c5ac) by Evan Wallace.
