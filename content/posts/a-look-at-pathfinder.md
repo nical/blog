@@ -3,7 +3,6 @@ Date: 2019-5-28
 Category: pathfinder, rust
 Slug: a-look-at-pathfinder
 Authors: Nical
-Status: draft
 
 This post is about [pathfinder](https://github.com/pcwalton/pathfinder), a GPU vector graphics renderer written in Rust by Patrick Walton as part of hist work in the emerging technologies team at Mozilla. While I have followed this work very closely, I have contributed very little code to pathfinder so the credit really goes to Patrick.
 
