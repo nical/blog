@@ -13,7 +13,7 @@ Because of that I would like this discussion to branch into several specific top
 
 ## Canvas, Cairo, Skia, QPainter - The immediate mode painting model
 
-![canvas-like APIs]({filename}/images/canvas-api.svg)
+![canvas-like APIs]({static}/images/canvas-api.svg)
 
 A lot of the most common 2d graphics APIs look somewhat similar: We have a context object which holds various drawing states like the current transform, pattern, or clip, we have a way to describe paths in post-script fashion (for example `context.move_to`, `context.line_to`, or if we are lucky, actual path objects that can be retained and reused). The general mental model is that you specify each drawing operation in back to front order and pixels are being painted immediately at each operation (or this is what the API pretends) but in practice drawing might be deferred so that the underlying implementation can take advantage of knowing about all of the elements and perform some global optimizations. For example CPU backends tend paint each drawing command individually, but GPU implementations pretty much need to be able to perform global optimizations in order to get acceptable performance. Another important aspect of these APIs is that they don't retain a description of the scene, which means that in order to render interactive content, you will submit the commands again each frame with some modifications for the parts that are changing. A common optimization when using this drawing model is for the user to track which region of the final image has changed and only redraw that part (in Firefox we call it invalidation).
 
@@ -23,7 +23,7 @@ Generally, implementing an efficient GPU backend for a pre-existing canvas-like 
 
 When motion comes into play (through animations or scrolling), re-rendering rectangles, paths, text and whatever else is moving at a high frame rate can become expensive with these drawing models. A very common solution to this problem is to group elements that tend to move together and paint them into retained surfaces that are often called layers (at least in the world of web browsers). Scrolling then becomes a matter of moving one or several layers and compositing them together to form the resulting image. This compositing operation is the job of... the compositor. Compositing within an application is very similar to compositing for a window manager, to the point where all modern window managers now provide APIs to let applications delegate the work of compositing their layers to the window manager, which avoids one compositing step, saves cycles, memory bandwidth and power. It is somewhat painful that all platforms expose this functionality in subtly different ways, but I think that it would be a mistake for any new UI toolkit to ignore it if they have a concept of retained surfaces.
 
-![Gecko compositor]({filename}/images/gecko-compositor.png)
+![Gecko compositor]({static}/images/gecko-compositor.png)
 
 ## Rendering web pages and UIs
 

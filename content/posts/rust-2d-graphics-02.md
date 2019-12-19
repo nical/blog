@@ -16,7 +16,7 @@ Let's have a look at [WebRender](https://github.com/servo/webrender). Most drawi
 The drawing parameters we write into the buffer contain information such as the position and size of the rectangle in layout space, a transformation to go from layout space to screen space, some flags about whether some anti-aliasing must be done, the positions and sizes of some source images in a texture atlas if need be (for example to apply a texture or a mask), the z-index of the primitive to write into the depth buffer, etc.
 The vertex shader uses an instance id to find the right information in a per-instance parameter buffer, transforms the geometry (a unit quad) into the right rectangle on screen, forwards some data to the fragment shader and the latter executes the per pixel logic (read from the source textures, apply some effect, write output color, etc.).
 
-![gpu memory organization example]({filename}/images/gpu-mem-01.svg)
+![gpu memory organization example]({static}/images/gpu-mem-01.svg)
 
 This approach is fairly generic, not particular to WebRender (a lot of games do this sort of thing) and works quite well.
 What's interesting here is that if you get to write the shaders yourself you have a lot of flexibility in how the input data is organized in GPU memory. You can put all of the parameters for a given instance contiguous together or add levels of indirection, share some common parameters among many instances or even devise your own compression scheme for your data. All that matters is for the CPU code to know how to writes bytes and the shader to know how to find the data in GPU memory and interpret it the right way, and then it is up to you to decide what trade-off to make about simplicity, memory usage and data locality.
@@ -46,7 +46,7 @@ Some allocations are best managed manually (explicit allocation and deallocation
 
 So far I talked about allocations in the sense of figuring out how many bytes at which offset to reserve in GPU memory for this and that, but we also want to write into these allocations. Often times people think of allocating and writing into memory as single thing. When writing ```let five = Box::new(5)``` you both ask the allocator to figure out where the value will be and write the value in memory. But sending data to the GPU isn't that simple. In general you can't assume that the memory you are writing to on the CPU is the one that gets read in the shaders. There are several memory heaps with different characteristics (CPU-visible, GPU-visible, fast/slow to read/write on the CPU/GPU, etc.). In practice this means that for a lot things the data is first written into a staging buffer that is CPU-visible, then copied from there into memory that is fast to read from the shaders.
 
-![staging buffer]({filename}/images/gpu-mem-02.svg)
+![staging buffer]({static}/images/gpu-mem-02.svg)
 
 One strategy could be to work with a large GPU buffer for the shader to read and generally smaller staging buffers into which we write only the parts that have changed. In this scheme the shader gets to read from a single contiguous buffer containing static and dynamic data alike and doesn't have to be aware of that. This is at the cost of copying from the staging buffer for data that we now will only read for a single frame. If a lot of data needs to be updated and read only once each frame, using another type of GPU memory heap that is both accessible to the CPU and the GPU, is slower to read in the shader but depending on how the data is read it might still be faster than the copy of the staging buffer. [An example](https://youtu.be/zSG6dPq57P8?t=991) given for this type of memory heap is particle positions in a game, where by definition we know all of it will change each frame. The downside is that the shader can't pretend it is in a unified address space with the rest, so it isn't agnostic to what is animated and what is not. This might not be a good fit for cases where, say, some of the positions are animated while others are not and it all goes through the same code path in the shader.
 Another thing to be careful about is that some types of memory heaps use write-combined memory which is ideal to fill the staging buffer but can perform poorly if we don't pay attention to how we write into it. So we have to allocate full aligned multiple-of-cacheline sized chunks and avoid random access.
@@ -59,7 +59,7 @@ But I believe this is an important part of the foundation. It is built upon most
 
 I'll end this post with hand-wavey overview of how I see this stuff fitting into the bigger picture:
 
-![boring architecture diagram]({filename}/images/gpu-mem-03.svg)
+![boring architecture diagram]({static}/images/gpu-mem-03.svg)
 
 From bottom to top there is:
 
