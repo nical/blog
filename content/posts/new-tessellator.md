@@ -124,3 +124,5 @@ I would also like to spend some time working *with* lyon rather than only *on* i
 I am really happy and proud to finally release the new tessellator. It adds up to an enormous amount of work over the last two years, but I think that it was necessary to take the tessellator from pretty good to really robust and reliable. While uncompromising robustness was the main motivation behind this rewrite, a number of important features were also made possible.
 
 Although the rewrite wasn't well set up for external contributions, development didn't stop on the master branch! I would like to thank everyone who made contributions to lyon in 2019 and the years before. Also many thanks to everyone who reported bugs, for their time, patience and support.
+
+This blog does not have a comments section, discussion on [reddit](https://www.reddit.com/r/rust/comments/efz5jb/lyon_0150_a_new_tessellator/).
