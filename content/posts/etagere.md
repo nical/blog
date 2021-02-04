@@ -1,5 +1,5 @@
 Title: Improving texture atlas allocation in WebRender
-Date: 2020-11-28
+Date: 2021-2-4
 Category: webrender, rust
 Slug: etagere
 Authors: Nical
