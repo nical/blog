@@ -35,7 +35,7 @@ Deallocation could simply consist of adding the deallocated rectangle back to th
 
 To address that, WebRender's implementation would regularly do a O(n²) complexity search to find and merge neighbor free rectangles, which was very slow when dealing with thousands of items. Eventually we stopped using the  guillotine allocator in systems that needed support for deallocation, replacing it with a very simple slab allocator which I'll get back to later in this post.
 
-I wasn't satisfied with moving to a worse allocator because of the run-time defragmentation issue, so as a side project I wrote a guillotine allocator that tracks rectangle splits in a tree in order to find and merfe neighbor free rectangle in constant instead of quadratic time. I published it in the [guillotiere](crates.io/crates/guillotiere) crate. I wrote about how it works in details in [the documentation](https://docs.rs/guillotiere/0.6.0/guillotiere/struct.AtlasAllocator.html) so I won't go over it here. I'm quite happy about how it turned out, although I haven't pushed to use it in WebRender, mostly because I wanted to first see evidence that it would help and I already had evidence that many other things needed to be worked on.
+I wasn't satisfied with moving to a worse allocator because of the run-time defragmentation issue, so as a side project I wrote a guillotine allocator that tracks rectangle splits in a tree in order to find and merge neighbor free rectangle in constant instead of quadratic time. I published it in the [guillotiere](crates.io/crates/guillotiere) crate. I wrote about how it works in details in [the documentation](https://docs.rs/guillotiere/0.6.0/guillotiere/struct.AtlasAllocator.html) so I won't go over it here. I'm quite happy about how it turned out, although I haven't pushed to use it in WebRender, mostly because I wanted to first see evidence that it would help and I already had evidence that many other things needed to be worked on.
 
 ## Visualizing program state using SVG
 
@@ -204,7 +204,7 @@ The atlas is initialized with no shelf. When allocating an item, we first find t
 
 ![Shelf packing]({static}/images/atlas/shelf-packing.svg)
 
-At a glance we can see that this scheme is likely to provide much better packing than the slab allocator. For one, items are tightly packed horizontally within the shelves. That alone saves a lot of space compared to the power-of-two slab widths. Most of the waste happens vertically, between an item and the top of its shelf. How much the shelf allocator wasts vertically depends on how the shelve heights are chosen. Since we aren't constrained to power-of-two size, we can also do much better than the slab allocator vertically.
+At a glance we can see that this scheme is likely to provide much better packing than the slab allocator. For one, items are tightly packed horizontally within the shelves. That alone saves a lot of space compared to the power-of-two slab widths. Most of the waste happens vertically, between an item and the top of its shelf. How much the shelf allocator wastes vertically depends on how the shelve heights are chosen. Since we aren't constrained to power-of-two size, we can also do much better than the slab allocator vertically.
 
 ### The bucketed shelf allocator
 
