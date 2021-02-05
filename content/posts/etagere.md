@@ -35,7 +35,7 @@ Deallocation could simply consist of adding the deallocated rectangle back to th
 
 To address that, WebRender's implementation would regularly do a O(n²) complexity search to find and merge neighbor free rectangles, which was very slow when dealing with thousands of items. Eventually we stopped using the  guillotine allocator in systems that needed support for deallocation, replacing it with a very simple slab allocator which I'll get back to later in this post.
 
-I wasn't satisfied with moving to a worse allocator because of the run-time defragmentation issue, so as a side project I wrote a guillotine allocator that tracks rectangle splits in a tree in order to find and merge neighbor free rectangle in constant instead of quadratic time. I published it in the [guillotiere](crates.io/crates/guillotiere) crate. I wrote about how it works in details in [the documentation](https://docs.rs/guillotiere/0.6.0/guillotiere/struct.AtlasAllocator.html) so I won't go over it here. I'm quite happy about how it turned out, although I haven't pushed to use it in WebRender, mostly because I wanted to first see evidence that it would help and I already had evidence that many other things needed to be worked on.
+I wasn't satisfied with moving to a worse allocator because of the run-time defragmentation issue, so as a side project I wrote a guillotine allocator that tracks rectangle splits in a tree in order to find and merge neighbor free rectangle in constant instead of quadratic time. I published it in the [guillotiere](https://crates.io/crates/guillotiere) crate. I wrote about how it works in details in [the documentation](https://docs.rs/guillotiere/0.6.0/guillotiere/struct.AtlasAllocator.html) so I won't go over it here. I'm quite happy about how it turned out, although I haven't pushed to use it in WebRender, mostly because I wanted to first see evidence that it would help and I already had evidence that many other things needed to be worked on.
 
 ## Visualizing program state using SVG
 
@@ -270,11 +270,11 @@ Today this translates into fewer draw calls and less CPU-to-GPU transfers which 
 
 The slab allocator improvements landed in [bug 1674443](https://bugzilla.mozilla.org/show_bug.cgi?id=1674443) and shipped in Firefox 85, while the shelf allocator integration work went in [bug 1679751](https://bugzilla.mozilla.org/show_bug.cgi?id=1679751) and will make it hit the release channel in Firefox 86. The interesting parts of this work are packaged in a couple of rust crates under permissive MIT OR Apache-2.0 license:
 
-[guillotiere](github.com/nical/guillotiere):
+[guillotiere](https://github.com/nical/guillotiere):
 
 [![crate](https://meritbadge.herokuapp.com/guillotiere)](https://crates.io/crates/guillotiere) [![doc](https://docs.rs/guillotiere/badge.svg)](https://docs.rs/guillotiere) 
 
-[etagere](github.com/nical/etagere):
+[etagere](https://github.com/nical/etagere):
 
 [![crate](https://meritbadge.herokuapp.com/etagere)](https://crates.io/crates/etagere) [![doc](https://docs.rs/etagere/badge.svg)](https://docs.rs/etagere)
 
