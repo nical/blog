@@ -11,6 +11,8 @@ Status: draft
 
 There should be an animated image player thing below:
 
-<div class="svg-anim" file_name="/images/anim-test/step" frames="13" playback-speed="1.2"></div>
+<div class="anim-player" file_name="/images/anim-test/step-$.svg" frames="13" playback-speed="1.2"></div>
+
+
 
 
