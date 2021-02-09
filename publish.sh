@@ -1,7 +1,7 @@
 #!/bin/sh
 
 echo "building..." &&
-pelican ./content &&
+pelican ./content -s ./publishconf.py &&
 echo "copying into nical.github.io..." &&
 cp -r ./output/* ../nical.github.io/ &&
 echo "git add . && git commit -am $1" &&
