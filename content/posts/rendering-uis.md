@@ -5,6 +5,8 @@ Slug: gui-gpu-notes
 Authors: Nical
 Status: draft
 
+Some notes intended for the bevy folks currently investigating UI rendering improvements.
+
 # Design pillars
 
 ## Common shapes
@@ -158,4 +160,27 @@ It's also a rather CPU-heavy thing which can be a hard sell if you are already C
 
 Still, it's a handy tool. My recommendation to anyone using tessellated geometry is to not treat each shape separately (avoid a draw-call per shape!) and instead batch as much of the geometry as possible in few draw calls with enough information for the shaders to position and shade each part correctly. The trick of rendering all opaque triangles first front-to-back and then the blended ones back-to-front tends to work well for this type of content.
 Another recommendation is to compress the per-vertex data as much as possible. For example store 2D coordinates as pairs of u16, normalized to the 0..1 range and then scaled to the bounding box of the drawing. If the drawing is large, split it up until u16 offers enough precision.
+
+
+# Text rendering
+
+Text can be a bit of a pain. But UIs tend to have a lot of it so it deserves to be a special snowflake.
+ - Sub-pixel positioning is important if you want to render text that looks remotely good (otherwise you get pretty ugly keming issues).
+ - Sub-pixel AA will for ever be a controversial topic. I would rather not have to support it because pixel density is usually high nowadays, but a lot of people are very used to it and expect it from a GUI framework. Hopefully their numbers will dwindle over time. Subpixel AA is a bit annoying because it requires a different blending equation and only works on top of opaque content (so it has to be disabled on a transparent layer if there is nothing opaque underneith, figuring that out in WebRender is a tad annoying.
+ - People are very serious about their text looking "native". Each platform has its own standard text rendering tech and using, say, freetype on all platforms will definitely look odd on Windows and Mac. You don't have to be a text rendering snob to notice it, how much it bothers people I am not sure but it's not something we can afford to do in a web browser, I think that cross platform toolkits like Qt also go though the hassle of integrating with each platform's text rendering stack. It's probably something that can be retrofitted when the time is right but it doesn't hurt to have a look at the different APIs and prepare an abstraction that will make that easier in the future. You can look at WebRender's font related types: https://searchfox.org/mozilla-central/source/gfx/wr/webrender_api/src/font.rs
+ 
+
+# Compositing
+
+Modern UI toolkits and all web browsers render content into layers and either composite these layers manually or deffer that to the window manager via Direct Composition, core animation or wayland subsurfaces. In addition, they track damaged region (what portion of the layers and of the screen has changed) to render as little as possible each frame.
+This is unlike a typical video game where there's a lot of movement everywhere and the entire screen needs to be re-rendered every frame, causing a reatined layer and invalidation system to be less useful.
+
+In my opinion, to be competitive as an app rendering framework, compositing and invalidation are pretty much *mandatory*. Without it, very basic interactions like scrolling or clicking a button consume orders of magnitude more power. It's the type of thing that makes the difference between an app that makes your fans spin as soon as you use it, versus one that does not, users notice that. WebRender tried very hard to break away from that at first, preferring to design around being very fast at rendering everything every frame, and both compositing and invalid region tracking had to be painfully retrofitted into it over multiple years. I was initially going to skip writing about this but I just read the bevy anniversary post and it mentions intent to be a serious tool for "Rust GUI apps" in general if so then it deserves serious consideration.
+
+Making use of Direct Composition and Core Animation (and for the adventurous, wayland subsurfaces), makes a pretty big difference. I would advise studying their APIs and identifying their common feature set and constraints before coming up with a compositing abstraction. I could link to WebRender's but I am not sure it's the best reference. In particular it tends to rebuild the layer trees very often and we are discovering that to be a source of overhead. Still it's of the biggest improvements of last year if not the biggest.
+
+I suggest being very up-front about compositing. Automatic layerization is a bit of an art and painful to debug. I think that "I want this content to be in a retained layer that I can move around" is a fair thing to expose in mid or high level drawing API. Having explicit layers in a drawing API also means you can have specific layers with different capabilities, for example a 2D canvas layer, a 3D layer etc. A good place to allow experimenting with new drawing abstractions without breaking compatibility with the existing ones. If you want to make sure the use case of rendering directly into the window's framebuffer is reliably supported, you can always have "compositor windows" and "single layer windows" so that your simple game sticks to the latter while an app opts into the former.
+
+Invalidation is even harder to retrofit into a design. Doing a diff of the render tree to figure it out is costly. I suspect that it's cheapest when done early in the pipeline. It doesn't have to be pixel-precise as long as it is conservative.
+
 
