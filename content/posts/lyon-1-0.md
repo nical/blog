@@ -1,10 +1,14 @@
 Title: Lyon 1.0
-Date: 2022-11-2
+Date: 2022-07-11
 Category: lyon, rust
 Slug: lyon-1-0
 Authors: Nical
 
 I am happy to finally announce the symbolic release of `lyon 1.0.0`.
+
+
+`lyon` is a Rust crate providing a number of functionalities related to vector graphics and rendering them using polygon tessellation.
+The most interesting and complex piece is `lyon_tessellation`'s fill tessellator which produces a triangle mesh for any arbitrary vector path including shapes with holes and self-intersections. Some people prefer to only use the `lyon_geom` crate which provides a lot of useful bézier curve math, or `lyon_path` for building and iterating vector paths.
 
 
 ![The logo]({static}/images/lyon-logo.svg)
@@ -21,14 +25,12 @@ I am happy to finally announce the symbolic release of `lyon 1.0.0`.
   </a>
 </p>
 
-`lyon` is a Rust crate providing a number of functionalities related to vector graphics and rendering them using polygon tessellation.
-The most interesting piece is the fill tessellator which produces a triangle mesh for any arbitrary vector path including shapes with holes and self intersecting ones. There are a few other note worthy goodies, such as the `lyon_geom` crate which provide a lot of useful curve manipulation math on top of `euclid`.
 
-`lyon` first hit crates.io around mid 2016, there have been quite a few releases since then and the last release with breaking changes before `1.0.0` was in January 2021, so more than a year ago. The project is quite stable and I have been happy with the robustness of the tessellator for a while. So why not publish a `1.0.0` sooner?
+`lyon` first hit crates.io around mid 2016. There have been quite a few releases since then and the last release with breaking changes before `1.0.0` was in January 2021, so about a year and a half ago at the time of writing. The project is quite stable and I have been happy with the robustness of the tessellator for a while. So why not publish a `1.0.0` sooner?
 
-For a large part I, like many in the Rust ecosystem, have been guilty of a bit of "`1.0` semver shyness" there's this irrational fear of marking something `1.0` while it isn't perfect and it's API completely figured out. The reality of software is of course that nothing is ever perfect. The other reason, the more important one, is that I've always wanted this project to grow into a fully featured 2D renderer. It was my goal at the beginning and In the process I found that making a fast and robust tessellator is a project in its own right and I got side-tracked. I think of it as a good thing, I am sure that a decent portion of lyon's users are interested in some of the difficult low level components more than in a fully flegded renderer. I haven't given up on the idea, but realistically it will be far enough in the future that the version number should reflect how I think of the pieces that I have now.
+For a large part I, like many in the Rust ecosystem, have been guilty of a bit of "`1.0` semver shyness" there's this irrational fear of marking something `1.0` while it isn't perfect and it's API completely figured out. The reality of software is of course that nothing is ever perfect. The other reason, the more important one, is that I've always wanted this project to grow into a fully featured 2D renderer. It was my goal at the beginning and In the process I found that making a fast and robust tessellator is a project in its own right and I got side-tracked. I think of it as a good thing, I am sure that a decent portion of lyon's users are interested in some of the difficult low level components more than in a fully fledged renderer. I haven't given up on the idea, but realistically it will be far enough in the future that the version number should reflect how I think of the pieces that I have now.
 
-So there you have it. I'm taking this ridiculously tiny psychological leap and incrementing the major version to 1, giving me access to not two but three semver numbers to define versions. There will be a 2.0 eventually, and surely many after that.
+So there you have it. I'm taking this ridiculously tiny psychological leap and incrementing the major version to 1, giving me access to not two but three semver numbers to define versions. There will be a 2.0 eventually, and surely many other major versions after that.
 
 # What's new in 1.0?
 
@@ -44,15 +46,15 @@ const STROKE_WIDTH: usize = 0;
 
 // A custom vertex constructor for collecting the output of the stroke tessellator.
 struct VariableWidthStrokeCtor;
-impl StrokeVertexConstructor<Point> for VariableWidthStrokeCtor {
-    fn new_vertex(&mut self, vertex: StrokeVertex) -> Point {
+impl StrokeVertexConstructor<[f32; 2]> for VariableWidthStrokeCtor {
+    fn new_vertex(&mut self, mut vertex: StrokeVertex) -> [f32; 2] {
         // Grab the width. The tessellator automatically (and lazily) did the work of
         // interpolating the custom attributes
         let width = vertex.interpolated_attributes()[STROKE_WIDTH];
         // Instead of using `vertex.position()` compute the adjusted position manually.
-        let position = vertex.position_on_path() + vertex.normal() * width;
+        let position = vertex.position_on_path() + vertex.normal() * width * 0.5;
 
-        position
+        position.to_array()
     }
 }
 
@@ -66,7 +68,7 @@ builder.end(false);
 
 let path = builder.build();
 
-let mut geometry: VertexBuffers<Point, u16> = VertexBuffers::new();
+let mut geometry: VertexBuffers<[f32; 2], u16> = VertexBuffers::new();
 stroke_tessellator.tessellate_path(
     &path,
     &StrokeOptions::tolerance(0.01).with_line_caps(LineCap::Round),
@@ -79,15 +81,16 @@ stroke_tessellator.tessellate_path(
 
 Rendering the tessellated geometry of this example would look like:
 
-TODO: image
+![The logo]({static}/images/variable-width-stroke/lyon-0-17.png)
 
-It works, kind of. See how the joins and caps don't look quite right? I would expect the outline to have a smoother curvature like in the image below which was rendered using lyon 1.0's built-in support for variable line width.
+It works, kind of. See how the joins and caps don't look quite right? I would expect the outline to have a smoother curvature where the edges meet joins and caps like in the image below which was produced using `lyon 1.0`'s built-in support for variable line width. 
 
-TODO: image
+![The logo]({static}/images/variable-width-stroke/lyon-1-0.png)
 
 
+Implementing this feature required a bit of high school trigonometry and a full rewrite of the stroke tessellator.
 
-Some of the APIs have changed a bit so here is the equivalent code for lyon 1.0:
+Some of the APIs have changed a bit so here is the equivalent code for `lyon 1.0`:
 
 
 ```rust
@@ -99,15 +102,15 @@ const STROKE_WIDTH: AttributeIndex = 0;
 // We don't really need a custom constructor now that we only output the vertex position but
 // let's make one for the sake of completeness.
 struct VariableWidthStrokeCtor;
-impl StrokeVertexConstructor<Point> for VariableWidthStrokeCtor {
+impl StrokeVertexConstructor<[f32; 2]> for VariableWidthStrokeCtor {
     fn new_vertex(&mut self, vertex: StrokeVertex) -> Point {
-        vertex.position()
+        vertex.position().to_array()
     }
 }
 
 // [...]
 
-let mut geometry: VertexBuffers<Point, u16> = VertexBuffers::new();
+let mut geometry: VertexBuffers<[f32; 2], u16> = VertexBuffers::new();
 stroke_tessellator.tessellate_path(
     &path,
     &StrokeOptions::tolerance(0.01)
@@ -120,9 +123,9 @@ stroke_tessellator.tessellate_path(
 );
 ```
 
-That said, there is an important shortcomings to this approach to variable line widths. The line width is interpolated very naively, using the bézier curve `t` parameter. This means that the interpolation will tend to vary more rapidly along curvier parts of the curve than around the more flat parts.
+That said, there is an important shortcoming to this approach to variable line widths. The line width is interpolated very naively, using the bézier curve `t` parameter. This means that the interpolation will tend to vary more rapidly along curvier parts of the curve than around the more flat parts.
 
-But hey, it's still fun to play with and I hope it will be useful to some. Having the option to interpolate attributes linearly (based on distance instead of the curve parameter) could be a pretty nice feature for `lyon 2.0` or some other future release if there is interest for it.
+But hey, it's still fun to play with, I hope it will be useful to some and I'll what the next iteration of this is based on the feedback I receive. Having the option to interpolate attributes linearly (based on distance instead of the curve parameter) could be a pretty nice feature for `lyon 2.0` or some other future release if there is interest for it, just like a more "serious" curve offsetting algorithm.
 
 ## The path sampler in lyon_algorithms
 
@@ -134,7 +137,7 @@ As a bonus the path sampler can be configured to either sample at certain distan
 
 ```rust
 // PathMeasurements is expensive to build but easy to cache and allows the rest to be quite fast.
-// It is immutable so it one it can even be used concurrently on multiple threads.
+// It is immutable so it could even be used concurrently on multiple threads.
 let measurements = PathMeasurements::from_path(&path, tolerance);
 // PathSampler is a bit more temporary in the sense that it has a lifetime and has some mutable state.
 let mut sampler = measurements.create_sampler(&path, SampleType::Normalized);
@@ -165,9 +168,9 @@ In no particular order:
 
 # Notable API changes
 
-The rest of this post goes into some nitty gritty API details. It is probably not a particularly interesting read unless you are using some of `lyon`'s advanced features. You have been warned.
+The rest of this post goes into some some API details. It is probably not a particularly fun read unless you are using some of `lyon`'s advanced features. You have been warned.
 
-## The `PathBuilder` API now includes custom attributes.
+## The PathBuilder API now includes custom attributes.
 
 I did my best to avoid changing the whole API with this one, so it will hopefully not affect most users, unless they use or implement the `PathBuilder` trait manually.
 
@@ -258,7 +261,7 @@ cargo run -- show "M 40 100 5 80 20 30 C 100 220 150 50 250 100 2 L 200 50 40" -
 
 
 
-## `Side::Left`/`Side::Right` renamed into `Side::Positive`/`Side::Negative`.
+## Side::Left/Right renamed into Side::Positive/Negative.
 
 This change was pretty significant internally, but will only affect users of `StrokeVertex::side`.
 
@@ -278,16 +281,16 @@ In this release I removed a number of redundant or half-baked features that I fe
 
 I suspect that most of the removed features had little to no users. If you depended on one of them, I suggest copying their implementation from `lyon 0.17` in your code.
 
-These removals relieve some maintenance burden and bring the whole package to a more consistent level of quality and robustness. Some of the half-baked parts contributed to my mental block around calling it a 1.0.
+These removals relieve some maintenance burden and bring the whole package to a more consistent level of quality and robustness. Some of the half-baked parts contributed to my mental block around calling it a `1.0`.
 
 
-# Conclusion
+# Wrapping up
 
-`lyon 1.0.0` wasn't as big a release as, say, `0.15.0` in which the fill tessellator was rewritten. It isn't the end of a cycle or the beginning of one, it is simply time to do a bit of cleanup and mark the symbolic `1.0` to reflect that the project is fairly stable.
+`lyon 1.0.0` wasn't as big a release as, say, `0.15.0` in which the fill tessellator was rewritten. It isn't the end of a cycle nor the beginning of one, it is simply time to do a bit of cleanup and mark the symbolic `1.0` to reflect that the project is fairly stable.
 
 I did rewrite the stroke tessellator to introduce the fancy variable width feature. That means there's realistically a bit of risk there of new bugs. I encourage you all to report them and I will do my best to fix them quickly.
 
-There are a number of lyon-related things I would like to do next some of which are venturing away from tessellated triangle meshes. I don't want to tease them out too soon as it may be a while before I get them into a workable state. Stay tuned!
+There are a number of lyon-related things I would like to do next, some of which are venturing away from tessellated triangle meshes. I don't want to tease them out too soon as it may be a while before I get them into a workable state. Stay tuned!
 
 
 This symbolic milestone is as good a time as any to thank all of the people who contributed in small or in big ways to the project. So in chronological order, many thanks to:
@@ -344,13 +347,4 @@ This symbolic milestone is as good a time as any to thank all of the people who 
 * [@Mivik](https://github.com/Mivik)
 
 Thank y'all! You rock!
-
-
-
-
-TODO: image
-
-cargo run -- show "M 40 100 5 80 20 30 C 100 220 150 50 250 100 2 L 200 50 40" -s --line-cap Round --line-join Round --custom-attributes 1 --variable-line-width 0
-
-cargo run -- show "M 0 0 5 L 50 0 100 100 0 5 150 0 50" -s --line-cap Round --line-join Round --custom-attributes 1 --variable-line-width 0
 
