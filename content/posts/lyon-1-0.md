@@ -125,7 +125,7 @@ stroke_tessellator.tessellate_path(
 
 That said, there is an important shortcoming to this approach to variable line widths. The line width is interpolated very naively, using the bézier curve `t` parameter. This means that the interpolation will tend to vary more rapidly along curvier parts of the curve than around the more flat parts.
 
-But hey, it's still fun to play with, I hope it will be useful to some and I'll what the next iteration of this is based on the feedback I receive. Having the option to interpolate attributes linearly (based on distance instead of the curve parameter) could be a pretty nice feature for `lyon 2.0` or some other future release if there is interest for it, just like a more "serious" curve offsetting algorithm.
+But hey, it's still fun to play with, I hope it will be useful to some and I'll work towards the next iteration based on the feedback I receive. Having the option to interpolate attributes linearly (based on distance instead of the curve parameter) could be a pretty nice feature for `lyon 2.0` or some other future release if there is interest for it, just like a more "serious" curve offsetting algorithm.
 
 ## The path sampler in lyon_algorithms
 
@@ -168,7 +168,7 @@ In no particular order:
 
 # Notable API changes
 
-The rest of this post goes into some some API details. It is probably not a particularly fun read unless you are using some of `lyon`'s advanced features. You have been warned.
+The rest of this post goes into some API details. It is probably not a particularly fun read unless you are using some of `lyon`'s advanced features. You have been warned.
 
 ## The PathBuilder API now includes custom attributes.
 
