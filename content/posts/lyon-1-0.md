@@ -8,7 +8,7 @@ I am happy to finally announce the symbolic release of `lyon 1.0.0`.
 
 
 `lyon` is a Rust crate providing a number of functionalities related to vector graphics and rendering them using polygon tessellation.
-The most interesting and complex piece is `lyon_tessellation`'s fill tessellator which produces a triangle mesh for any arbitrary vector path including shapes with holes and self-intersections. Some people prefer to only use the `lyon_geom` crate which provides a lot of useful bézier curve math, or `lyon_path` for building and iterating vector paths.
+The most interesting and complex piece is `lyon_tessellation`'s [fill tessellator](https://docs.rs/lyon_tessellation/1.0.0/lyon_tessellation/struct.FillTessellator.html) which produces a triangle mesh for any arbitrary vector path including shapes with holes and self-intersections. Some people prefer to only use the [`lyon_geom`](https://docs.rs/lyon_geom/1.0.0/lyon_geom/) crate which provides a lot of useful bézier curve math, or [`lyon_path`]((https://docs.rs/lyon_path/1.0.0/lyon_path/)) for building and iterating vector paths.
 
 
 ![The logo]({static}/images/lyon-logo.svg)
@@ -36,7 +36,7 @@ So there you have it. I'm taking this ridiculously tiny psychological leap and i
 
 ## Variable width strokes
 
-For this release, I wanted to implement something fun. The stroke tessellator lets you specify a line width that is constant over the entire path. What if you wanted the line width to change along the path? In `lyon 0.17` you could approximate this effect by storing a line-width per endpoint using custom attributes and implementing your own `StrokeGeometryBuilder` or `StrokeVertexConstructor` to move each vertex along its normal.
+For this release, I wanted to implement something fun. The [stroke tessellator](https://docs.rs/lyon_tessellation/1.0.0/lyon_tessellation/struct.StrokeTessellator.html) lets you specify a line width that is constant over the entire path. What if you wanted the line width to change along the path? In `lyon 0.17` you could approximate this effect by storing a line-width per endpoint using custom attributes and implementing your own [`StrokeGeometryBuilder`](https://docs.rs/lyon_tessellation/1.0.0/lyon_tessellation/geometry_builder/trait.StrokeGeometryBuilder.html) or [`StrokeVertexConstructor`](https://docs.rs/lyon_tessellation/1.0.0/lyon_tessellation/geometry_builder/trait.StrokeVertexConstructor.html) to move each vertex along its normal.
 
 ```rust
 // lyon 0.17.0
@@ -129,9 +129,9 @@ But hey, it's still fun to play with, I hope it will be useful to some and I'll 
 
 ## The path sampler in lyon_algorithms
 
-Shout out to [@Mivik](https://github.com/Mivik) for proposing and implementing this new feature. In previous versions of `lyon`, if you wanted to find a point at a certain distance along a path, you could use the `PathWalker` which goes through the path and fires callbacks at certain distances. Each time a path is walked the algorithm starts from the beginning. If you need to do  thousands of random queries on a very large path, this approach is inefficient.
+Shout out to [@Mivik](https://github.com/Mivik) for proposing and implementing this new feature. In previous versions of `lyon`, if you wanted to find a point at a certain distance along a path, you could use the [`PathWalker`](https://docs.rs/lyon_algorithms/1.0.0/lyon_algorithms/walk/index.html) which goes through the path and fires callbacks at certain distances. Each time a path is walked the algorithm starts from the beginning. If you need to do  thousands of random queries on a very large path, this approach is inefficient.
 
-The idea behind path sampling is to create an acceleration data structure, called `PathMeasurements`, the creation of which has an important up-front cost (in the same ballpark as walking the path from the beginning to the end), but allows subsequent queries to be much faster than walking the path.
+The idea behind path sampling is to create an acceleration data structure, called [`PathMeasurements`](https://docs.rs/lyon_algorithms/1.0.0/lyon_algorithms/measure/struct.PathMeasurements.html), the creation of which has an important up-front cost (in the same ballpark as walking the path from the beginning to the end), but allows subsequent queries to be much faster than walking the path.
 
 As a bonus the path sampler can be configured to either sample at certain distances along the path, or sample a *normalized* distances (between zero and one where one means the end of the path).
 
@@ -154,16 +154,16 @@ println!("mid-point: {:?}, {:?}, {:?}", sample.position(), sample.tangent(), sam
 
 In no particular order:
 
- - Helpers to modify quadratic and cubic bézier curves by dragging any point on the curve.
- - Faster and more precise bézier curve length computation (once again implementing [Raph Levien's fantastic research work](https://raphlinus.github.io/curves/2018/12/28/bezier-arclength.html)).
- - A few helpers to split bézier curves into x and y-monotonic sub-curves.
- - Added `LineSegment::closest_point`/`distance_to_point`.
- - Added `QuadraticBezierSegment::closest_point`/`distance_to_point`.
+ - Helpers to modify [quadratic](https://docs.rs/lyon_geom/1.0.0/lyon_geom/struct.QuadraticBezierSegment.html#method.drag) and [cubic](https://docs.rs/lyon_geom/1.0.0/lyon_geom/struct.CubicBezierSegment.html#method.drag) bézier curves by dragging any point on the curve.
+ - Faster and more precise bézier curve [length](https://docs.rs/lyon_geom/1.0.0/lyon_geom/struct.QuadraticBezierSegment.html#method.length) computation (once again implementing [Raph Levien's fantastic research work](https://raphlinus.github.io/curves/2018/12/28/bezier-arclength.html)).
+ - A few helpers to split bézier curves into [x](https://docs.rs/lyon_geom/1.0.0/lyon_geom/struct.QuadraticBezierSegment.html#method.for_each_x_monotonic) and [y](https://docs.rs/lyon_geom/1.0.0/lyon_geom/quadratic_bezier/struct.QuadraticBezierSegment.html#method.for_each_y_monotonic)-monotonic sub-curves.
+ - Added [`LineSegment::closest_point`](https://docs.rs/lyon_geom/1.0.0/lyon_geom/struct.LineSegment.html#method.closest_point)/[`distance_to_point`](https://docs.rs/lyon_geom/1.0.0/lyon_geom/struct.LineSegment.html#method.distance_to_point).
+ - Added [`QuadraticBezierSegment::closest_point`](https://docs.rs/lyon_geom/1.0.0/lyon_geom/struct.QuadraticBezierSegment.html#method.closest_point)/[`distance_to_point`](https://docs.rs/lyon_geom/1.0.0/lyon_geom/struct.QuadraticBezierSegment.html#method.distance_to_point).
 
 ## Miscellaneous other new features
- - A helper to invert the triangle winding produced by the tessellators.
- - A function to determine whether a path is shaped like an axis aligned rectangle.
- - `Path::reversed` is now implemented as an iterator.
+ - A [helper](https://docs.rs/lyon_tessellation/1.0.0/lyon_tessellation/struct.BuffersBuilder.html#method.with_inverted_winding) to invert the triangle winding produced by the tessellators.
+ - A [function](https://docs.rs/lyon_algorithms/1.0.0/lyon_algorithms/rect/fn.to_axis_aligned_rectangle.html) to determine whether a path is shaped like an axis aligned rectangle.
+ - [`Path::reversed`](https://docs.rs/lyon_path/1.0.0/lyon_path/struct.Path.html#method.reversed) is now implemented as an iterator.
 
 
 # Notable API changes
@@ -182,15 +182,15 @@ One of my motivations with `lyon 1.0` was to get custom attributes better integr
 // With lyon 0.17:
 
 // This worked. `transformed` is provided by the `PathBuilder` trait.
-let mut builder_1 = Path::builder()
+let mut builder = Path::builder()
     .transformed(&Rotation::radians(PI / 2.0));
 
 // This did not. The builder with attributes didn't implement `PathBuilder`.
-let mut builder_2 = Path::builder_with_attributes(3)
+let mut builder = Path::builder_with_attributes(3)
     .transformed(&Rotation::radians(PI / 2.0));
 ```
 
-In `lyon 1.0` the `PathBuilder` trait takes custom attributes so that the generic adapters can take, forward or even modify them as needed. Paths that don't accept custom attributes can still implement the `PathBuilder` trait and simply discard the attributes or assert that they are empty.
+In `lyon 1.0` the [`PathBuilder` trait](https://docs.rs/lyon_path/1.0.0/lyon_path/builder/trait.PathBuilder.html) takes custom attributes so that the generic adapters can take, forward or even modify them as needed. Paths that don't accept custom attributes can still implement the `PathBuilder` trait and simply discard the attributes or assert that they are empty.
 
 To avoid the need to explicitly pass empty attributes (`&[]` or `NO_ATTRIBUTES`) everywhere when they aren't needed, there is a `NoAttributes<Builder>` adapter that exposes the `PathBuilder` methods without the attributes parameter.
 
@@ -200,22 +200,22 @@ As a result:
 ```rust
 // With lyon 1.0:
 
-// This still works. The type of builder_1 is `NoAttributes<Transformed<BuilderImpl>>`.
-let mut builder_1 = Path::builder()
+// This still works. The type of builder is `NoAttributes<Transformed<BuilderImpl>>`.
+let mut builder = Path::builder()
     .transformed(&Rotation::radians(PI / 2.0));
 
-builder_1.begin(point(0.0, 0.0));
-builder_1.line_to(point(10.0, 0.0));
-builder_1.end(false);
+builder.begin(point(0.0, 0.0));
+builder.line_to(point(10.0, 0.0));
+builder.end(false);
 
 
 // This works now. The type of builder_2 is `Transformed<BuilderWithAttributes>`.
-let mut builder_2 = Path::builder_with_attributes(3)
+let mut builder = Path::builder_with_attributes(3)
     .transformed(&Rotation::radians(PI / 2.0));
 
-builder_2.begin(point(0.0, 0.0), &[1.0, 2.0, 3.0];
-builder_2.line_to(point(10.0, 0.0), &[4.0, 5.0, 6.0];
-builder_2.end(false);
+builder.begin(point(0.0, 0.0), &[1.0, 2.0, 3.0];
+builder.line_to(point(10.0, 0.0), &[4.0, 5.0, 6.0];
+builder.end(false);
 ```
 
 In addition, some algorithms built on top of `PathBuilder` such as the path walker got support for custom attributes.
@@ -248,7 +248,7 @@ walker.end(false);
 
 ## New SVG path syntax parser
 
-The SVG path syntax parser which was optionally available in the `lyon_svg` crate was re-implemented in the `lyon_extra` crate. The new parser supports a superset of the SVG path syntax in order to support specifying custom attributes. The syntax is the same with one exception: after each endpoint the following sequence of N numbers are parsed as the attributes of the endpoint.
+The SVG path syntax parser which was optionally available in the `lyon_svg` crate was re-implemented in the `lyon_extra` crate. The [new parser](https://docs.rs/lyon_extra/1.0.0/lyon_extra/parser/struct.PathParser.html) supports a superset of the SVG path syntax in order to support specifying custom attributes. The syntax is the same with one exception: after each endpoint the following sequence of N numbers are parsed as the attributes of the endpoint.
 
 For example with two custom attributes, `M 0 0 1 2 Q 10 0 11 5 3 4` is equivalent to the standard SVG path `M 0 0 Q 10 0 11 5` where the endpoint at position `(0, 0)` has attributes `[1, 2]` and the endpoint `(11, 5)` has attributes `[3, 4]`. Note that control points cannot have custom attributes.
 
@@ -271,7 +271,7 @@ This enum is used to indicate on which side a point is along a stroked path. The
 
 # Spring cleaning
 
-In this release I removed a number of redundant or half-baked features that I felt was either not needed anynore, or wouldn't receive proper attention:
+In this release I removed a number of redundant or half-baked features that I felt was either not needed anymore, or wouldn't receive proper attention:
 
  - Bindings for the libtess2 tessellator (The `lyon_tess2` crate) which could be enabled with the `tess2` cargo feature and provide an alternative tessellator. I originally maintained a wrapper in order to have something to compare lyon against and as an alternative for users running into issues. Since then the fill tessellator has matured enough that I don't think keeping the libtess2 alternative is worth the effort anymore.
  - The path splitter, which was fun but buggy. I never had the time/energy/motivation to grow into a robust implementation.
@@ -288,7 +288,7 @@ These removals relieve some maintenance burden and bring the whole package to a 
 
 `lyon 1.0.0` wasn't as big a release as, say, `0.15.0` in which the fill tessellator was rewritten. It isn't the end of a cycle nor the beginning of one, it is simply time to do a bit of cleanup and mark the symbolic `1.0` to reflect that the project is fairly stable.
 
-I did rewrite the stroke tessellator to introduce the fancy variable width feature. That means there's realistically a bit of risk there of new bugs. I encourage you all to report them and I will do my best to fix them quickly.
+I did rewrite the stroke tessellator to introduce the fancy variable width feature. That means there's realistically a bit of a higher risk of new bugs there. I encourage you all to report them and I will do my best to fix them quickly.
 
 There are a number of lyon-related things I would like to do next, some of which are venturing away from tessellated triangle meshes. I don't want to tease them out too soon as it may be a while before I get them into a workable state. Stay tuned!
 
