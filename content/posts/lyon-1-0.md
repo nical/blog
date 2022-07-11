@@ -7,8 +7,8 @@ Authors: Nical
 I am happy to finally announce the symbolic release of `lyon 1.0.0`.
 
 
-`lyon` is a Rust crate providing a number of functionalities related to vector graphics and rendering them using polygon tessellation.
-The most interesting and complex piece is `lyon_tessellation`'s [fill tessellator](https://docs.rs/lyon_tessellation/1.0.0/lyon_tessellation/struct.FillTessellator.html) which produces a triangle mesh for any arbitrary vector path including shapes with holes and self-intersections. Some people prefer to only use the [`lyon_geom`](https://docs.rs/lyon_geom/1.0.0/lyon_geom/) crate which provides a lot of useful bézier curve math, or [`lyon_path`]((https://docs.rs/lyon_path/1.0.0/lyon_path/)) for building and iterating vector paths.
+[`lyon`](https://crates.io/crates/lyon) is a Rust crate providing a number of functionalities related to vector graphics and rendering them using polygon tessellation.
+The most interesting and complex piece is [`lyon_tessellation`](https://docs.rs/lyon_tessellation/1.0.0/lyon_tessellation/)'s [fill tessellator](https://docs.rs/lyon_tessellation/1.0.0/lyon_tessellation/struct.FillTessellator.html) which produces a triangle mesh for any arbitrary vector path including shapes with holes and self-intersections. Some people prefer to only use the [`lyon_geom`](https://docs.rs/lyon_geom/1.0.0/lyon_geom/) crate which provides a lot of useful bézier curve math, or [`lyon_path`]((https://docs.rs/lyon_path/1.0.0/lyon_path/)) for building and iterating vector paths.
 
 
 ![The logo]({static}/images/lyon-logo.svg)
@@ -129,11 +129,11 @@ But hey, it's still fun to play with, I hope it will be useful to some and I'll 
 
 ## The path sampler in lyon_algorithms
 
-Shout out to [@Mivik](https://github.com/Mivik) for proposing and implementing this new feature. In previous versions of `lyon`, if you wanted to find a point at a certain distance along a path, you could use the [`PathWalker`](https://docs.rs/lyon_algorithms/1.0.0/lyon_algorithms/walk/index.html) which goes through the path and fires callbacks at certain distances. Each time a path is walked the algorithm starts from the beginning. If you need to do  thousands of random queries on a very large path, this approach is inefficient.
+Shout out to [@Mivik](https://github.com/Mivik) for proposing and implementing this new feature. In previous versions of `lyon`, if you wanted to find a point at a certain distance along a path or sample positions at fixed intervals along a path, you could use the [`PathWalker`](https://docs.rs/lyon_algorithms/1.0.0/lyon_algorithms/walk/index.html) which goes through the path and fires callbacks at certain distances. Each time a path is walked the algorithm starts from the beginning. If you want to place many points along a path once it is great, however if you need to do thousands of randomly ordered queries on a very large path, this approach is inefficient.
 
 The idea behind path sampling is to create an acceleration data structure, called [`PathMeasurements`](https://docs.rs/lyon_algorithms/1.0.0/lyon_algorithms/measure/struct.PathMeasurements.html), the creation of which has an important up-front cost (in the same ballpark as walking the path from the beginning to the end), but allows subsequent queries to be much faster than walking the path.
 
-As a bonus the path sampler can be configured to either sample at certain distances along the path, or sample a *normalized* distances (between zero and one where one means the end of the path).
+As a bonus the path sampler can be configured to either sample at certain distances along the path, or sample at *normalized* distances (between zero and one where one means the end of the path).
 
 ```rust
 // PathMeasurements is expensive to build but easy to cache and allows the rest to be quite fast.
@@ -288,7 +288,7 @@ These removals relieve some maintenance burden and bring the whole package to a 
 
 `lyon 1.0.0` wasn't as big a release as, say, `0.15.0` in which the fill tessellator was rewritten. It isn't the end of a cycle nor the beginning of one, it is simply time to do a bit of cleanup and mark the symbolic `1.0` to reflect that the project is fairly stable.
 
-I did rewrite the stroke tessellator to introduce the fancy variable width feature. That means there's realistically a bit of a higher risk of new bugs there. I encourage you all to report them and I will do my best to fix them quickly.
+I did rewrite the stroke tessellator to introduce the fancy variable width feature. It was not a major effort because the stroke tessellator is a fairly simple algorithm, but it means there's realistically a higher risk of finding some new bugs there. I encourage you all to report any issue you run into and I will do my best to fix them quickly.
 
 There are a number of lyon-related things I would like to do next, some of which are venturing away from tessellated triangle meshes. I don't want to tease them out too soon as it may be a while before I get them into a workable state. Stay tuned!
 
